@@ -7,7 +7,7 @@
 
 This challenge presented a website which, upon entering the first and last name and choosing a weapon of choice, would generate a wrestler name. The landing page looks like this:
 
-![Screenshot](/images/pic1.png?raw=true)
+![Screenshot](/ctf/images/pic1.png?raw=true)
 
 
 ```javascript
