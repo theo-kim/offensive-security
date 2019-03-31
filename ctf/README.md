@@ -27,3 +27,13 @@ document.getElementById("button").onclick = function() {
 ```
 
 Immediately, I thought about exploiting the common XXE (XML External Entity) vulnerability. Rather than entering the XML exploit into the input element of the website, I tried passing the XML string drectly into the URL `http://ng.sunshinectf.org/generate.php?input=[XML]`.
+
+The XML object format was this:
+
+```xml
+<?xml version='1.0' encoding='UTF-8'?>
+<input>
+  <firstName>firstName</firstName>
+  <lastName>lastName</lastName>
+</input>
+```
