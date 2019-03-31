@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1 align="left">
+    Current Notes:
+  </h1>
+  <ul>
+    {% for note in notes %}
+      <li><a href="{{ note.get_link() }}">{{ note.title }}</a></li>
+    {% endfor %}
+  </ul>
+{% endblock content %}

@@ -1,0 +1,110 @@
+Labrynth
+
+Using Ghidra, I decompiled the binary and started reviewing the code, renaming the variables as I saw necessary.
+
+MAIN:
+
+The program uses a stack check to prevent a buffer overflow / stack alteration
+
+The program initializes an array of 17 characters all to hold NULL pointers
+
+Then the user inputes a value (string) to the first position of the array
+
+The program replaces the ending NULL character (/0) with a NULL pointer (0)
+
+Then it calls the function traverse
+
+If the returned value is equal to 0x257b then the program prints the flag
+
+Otherwise the program fails
+
+
+
+TRAVERSE
+
+The function loops through the supplied string until the NULL byte is reached (at which point it returns the result variable)
+
+A each iteraction of the loop, the result is incremented by the value contained at the address pointed to by 'move' variable
+Move is incremented by 0x08 if 'L' is current character in the string argument to traverse or 0x10 if 'R' is current character of traverse. The value being pointed to by move replaces the last byte of the current value of move
+
+
+GLOBALS:
+
+The reuslt variable is initially set to the global variable: a
+- a: 0x00601070 - 0x00601087
+- b: 0x00601090 - 0x006010a7
+- c: 0x006010b0 - 0x006010c7
+- d: 0x006010d0 - 0x006010e7
+- e: 0x006010f0 - 0x00601107
+- f: 0x00601110 - 0x00601127
+- g: 0x00601130 - 0x00601147
+- h: 0x00601150 - 0x00601167
+- i: 0x00601170 - 0x00601187
+- j: 0x00601190 - 0x006011a7 
+
+Each global is 17 long
+
+(value of 0x00 unless otherwise stated below)
+
+Follows pattern:
+
+...X0-8: Value of room
+...X8-10: Pointer to left turn room
+...10-18: Pointer to right turn room
+
+
+Current Room         Left         Right        Value
+-----------------+-----------+-------------+------------
+       A         |     C     |      G      |   227
+       B         |     E     |      D      |   505
+       C         |     D     |      G      |   1128
+       D         |     I     |      D      |   531
+       E         |     F     |      H      |   289
+       F         |     A     |      F      |   937
+       G         |     J     |      A      |   410
+       H         |     A     |      J      |   314
+       I         |     J     |      B      |   866
+       J         |     J     |      D      |   710
+
+GOAL: 9595
+
+PATH: A -> C -> D -> I -> J : 
+
+0x00601070: e3
+..08: b0
+..09: 10
+..0a: 60
+..80: 30
+..81: 11
+..82: 60
+10: 30
+18: 00
+20: f9
+
+LL
+e3 + b0
+
+
+
+ulong traverse(char *str)
+
+{
+  char *ptr;
+  uint rslt;
+  undefined1 *move;
+  
+  rslt = 0;
+  move = a;
+  ptr = str;
+  while (*ptr != 0) {
+    rslt = rslt + *(int *)move;
+    if (*ptr == 'L') {
+      move = *(undefined1 **)(move + 8);
+    }
+    if (*ptr == 'R') {
+      move = *(undefined1 **)(move + 0x10);
+    }
+    ptr = ptr + 1;
+  }
+  return (ulong)rslt;
+}

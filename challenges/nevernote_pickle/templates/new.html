@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <form class="form-horizontal" action="#" enctype="multipart/form-data" method="post">
+    <div class="form-group">
+      <label for="title" class="control-label col-sm-2" class="control-label">title</label>
+      <div class="col-sm-10">
+          <input type="text" name="title" placeholder="title" id="title" required>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="content" class="control-label col-sm-2">content</label>
+      <div class="col-sm-10">
+          <textarea type="text" name="content" placeholder="content" id="content" required></textarea>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="image" class="control-label col-sm-2">image (.png files only!)</label>
+      <div class="col-sm-10">
+          <input type="file" name="image" id="image" required>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <input type="submit" value="submit">
+      </div>
+    </div>
+  </form>
+{% endblock content %}
