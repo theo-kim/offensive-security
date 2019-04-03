@@ -2,11 +2,32 @@
 
 ## Challenge #1: Patches Punches (reversing)
 
+This challenge was a reversing challenge. The hint presented was: 
+
+```
+That moment when you go for a body slam and you realize you *jump* too far. Adjust your aim, and you'll crush this challenge!
+```
+
+So immediately, I knew that the challenge has something to do with jumps. The first step I took was executing the binary. The program outputed a single line with no means of input.
+
+```bash
+$ ./patches
+$ Woah there! you jumped over the flag.
+```
+
+Upon openning the binary in Binary Ninja, I inspected the code initally to find where the program prints its flag and at what point it branches away from normal execution and prints the previous output. The following portion of the assembly 
+
+```x86
+00000534  05a41a0000         add     eax, 0x1aa4  {_GLOBAL_OFFSET_TABLE_}
+00000539  c745f001000000     mov     dword [ebp-0x10 {var_18}], 0x1
+00000540  837df000           cmp     dword [ebp-0x10 {var_18}], 0x0
+00000544  755d               jne     0x5a3  {0x1}
+```
 
 ## Challenge #2: Wrestler Name Generator (web)
 
 This challenge presented a website which, upon entering the first and last name and choosing a weapon of choice, would generate a wrestler name. The landing page looks like this:
-
+tput.
 ![Screenshot](/ctf/images/pic1.png?raw=true)
 
 **Screenshot of the main landing page**
