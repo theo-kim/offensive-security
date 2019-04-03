@@ -17,7 +17,7 @@ $ Woah there! you jumped over the flag.
 
 Upon openning the binary in Binary Ninja, I inspected the code initally to find where the program prints its flag and at what point it branches away from normal execution and prints the previous output. The following portion of the assembly 
 
-```x86
+```assembly
 00000534  05a41a0000         add     eax, 0x1aa4  {_GLOBAL_OFFSET_TABLE_}
 00000539  c745f001000000     mov     dword [ebp-0x10 {var_18}], 0x1
 00000540  837df000           cmp     dword [ebp-0x10 {var_18}], 0x0
