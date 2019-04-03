@@ -18,11 +18,19 @@ $ Woah there! you jumped over the flag.
 Upon openning the binary in Binary Ninja, I inspected the code initally to find where the program prints its flag and at what point it branches away from normal execution and prints the previous output. The following portion of the assembly 
 
 ```assembly
-00000534  05a41a0000         add     eax, 0x1aa4  {_GLOBAL_OFFSET_TABLE_}
 00000539  c745f001000000     mov     dword [ebp-0x10 {var_18}], 0x1
 00000540  837df000           cmp     dword [ebp-0x10 {var_18}], 0x0
 00000544  755d               jne     0x5a3  {0x1}
 ```
+
+If the `cmp` evaluates to "not-equal," the program jumps to print the error message ("Woah there! you jumped over the flag!"). And the jump will always evaluates to "not-equals" because 1 is moved into `var_18` and then is compared to 0. Somehow I had to change the value in `var_18` to 0.
+
+So, to solve this, I just patched the binary file (altering the contents of the binary) using Binary Ninja. I just changed the `cmp` function to compare the value in `var_18` with **0x01** rather than **0x00**.
+
+![Screenshot](/ctf/images/1pic2.png?raw=true)
+
+Running the file now produces the flag.
+
 
 ## Challenge #2: Wrestler Name Generator (web)
 
